@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Maybank-Product Management</title>
+<script type="text/javascript" th:src="@{js/jquery.min.js}"></script>
+<link th:href="@{css/font-awesome.min.css}" rel="stylesheet"/>
+<link  rel="stylesheet" th:href="@{css/bootstrap.min.css}" />
+<link th:href="@{css/jquery-ui.min.css}" rel="stylesheet"/>
+
+
+	<style type="text/css">
+html {
+height: 100%;
+}
+
+.footer {
+   
+   left: 0;
+   bottom: 0;
+   width: 100%;
+  background-color:darkred;
+   text-align: center;
+   color:white;
+   size:3px;
+}
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    
+}
+.button{
+background-color: #C00000;
+border-color: #C00000;
+}
+.mt-1,
+.my-1 {
+  margin-top: -3.75rem !important;
+}
+
+h4 {
+  
+  font-family: sans-serif;
+}
+ .text-color{
+ color: black;
+  font-family: sans-serif;
+ }
+.loginForm{
+border-radius: 1.25rem;
+background-color: #E7E6E6;
+}
+input[type="text"] {
+	width: 100%;
+    border: 0.8px solid #41719C;
+    border-radius: 4px;
+    margin: 8px 0;
+    outline: none;
+    padding: 8px;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+.inputWithIcon input[type="text"] {
+  padding-left: 10px;
+}
+
+input[type="password"] {
+	width: 100%;
+    border: 0.8px solid #41719C;
+    border-radius: 4px;
+    margin: 8px 0;
+    outline: none;
+    padding: 8px;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+.inputWithIcon input[type="password"] {
+  padding-left: 10px;
+}
+
+.inputWithIcon {
+  position: relative;
+}
+
+.inputWithIcon i {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    padding: 9px 8px;
+    color: #000;
+    transition: 0.3s;
+}
+
+
+
+.inputWithIcon.inputIconBg i {
+  background-color: #aaa;
+  color: #fff;
+  padding: 9px 4px;
+  border-radius: 4px 0 0 4px;
+}
+.dot {
+  height: 80px;
+  width: 80px;
+  background-color: #C00000;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+
+
+	</style>
+<!-- 	<meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+<meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/> -->
+</head>
+<body class="bcGround">
+<br>
+<br>
+<br>
+<br>
+<br>
+
+	<div class="container" align="center">
+				
+				<div class="card loginForm" align="center" style="width: 45%;">
+				
+					<article class="card-body" >
+			
+					
+					<h4 class="card-title text-center mb-4 mt-1">
+						
+						
+						</h4>
+						<h4 class="text-center text-color">Product Management</h4>
+							
+						<form name="f" th:action="@{/login}"   method="POST">
+						<div th:if="${param.error1}">
+                        <div class="alert alert-danger">
+                            Invalid username and password.
+                        </div>
+                    </div>
+							<div class="form-group">
+							
+							<div class="inputWithIcon">
+							  <input type="text" name="username" placeholder="Username" class="form-control">
+							
+							</div>
+							
+							
+						
+						
+							</div>
+							
+							<div class="form-group">
+							
+							<div class="inputWithIcon">
+						  <input type="password" name="password" placeholder="Password" >
+						  
+						</div>
+							
+							</div>
+							
+							<div class="form-group">
+								<button type="submit" class="btn  btn-block button" style="color: white;">
+									Login</button>
+							</div>
+							
+							<!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+						</form>
+					</article>
+				</div>
+
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+
+<title>Ticket Search</title>
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<link th:href="@{css/jquery-ui.min.css}" rel="stylesheet" />
+<link th:href="@{css/font-awesome.min.css}" rel="stylesheet" />
+<link th:href="@{css/ui.jqgrid.min.css}" rel="stylesheet" />
+<link th:href="@{css/bootstrap.min.css}" rel="stylesheet" />
+<script type="text/javascript" th:src="@{/js/moment.min.js}"></script>
+
+
+<script type="text/javascript" th:src="@{/js/jquery.jqGrid.min.js}"></script>
+
+
+<style type="text/css">
+.form-group {
+	margin-bottom: 0rem;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+		Weclome : <span th:text="${#authentication.getPrincipal().getUsername()}"></span>
+		Email : <span th:text="${#authentication.getPrincipal().getEmail()}"></span>
+		<form action="" th:action="@{/logout}" method="post"><button class="btn btn-primary" type="submit">Logout</button></form>		
+</div>
+<br>
+
+<br>
+<br>
+	<table id="grid">
+
+
+	</table>
+	<div id="ptoolbar"></div>
+	<script th:inline="javascript" type="text/javascript">
+		/* var token = $("meta[name='_csrf']").attr("content");
+		 var header = $("meta[name='_csrf_header']").attr("content");
+		 $(document).ajaxSend(function(e,xhr,options) {
+		 xhr.setRequestHeader(header, token);
+		 }); */
+
+		$(document)
+				.ready(
+						function() {
+
+							"use strict";
+							$("#grid")
+									.jqGrid(
+											{
+												caption : "Products List",
+												url : "/products/getAllProducts",
+												dataType : "json",
+												ajaxSelectOptions : {
+													// one need allows GET in the webmethod (UseHttpGet = true)
+													contentType : 'application/json; charset=utf-8',
+													dataType : "json",
+													cache : false,
+													data : {
+														id : function() {
+															return JSON
+																	.stringify($(
+																			"#list")
+																			.jqGrid(
+																					'getGridParam',
+																					'selrow'));
+														}
+													}
+												},
+												width : 900,
+												colModel : [
+														{
+															label : "Product ID ",
+															name : "productId",
+															align : 'center',
+															editable : false,
+															search : false
+														},
+														{
+															label : "Product Name",
+															name : "productName",
+															align : 'center',
+															editable : true,
+															sopt : [ 'eq' ],
+															odata : [ 'equals' ]
+														},
+														{
+															label : "Product Url",
+															name : "url",
+															editable : true,
+															align : 'center',
+															search : false
+														},
+														{
+															label : "Product Image Url",
+															name : "productImageUrl",
+															align : 'center',
+															editable : true,
+															search : false
+														},
+														{
+															label : "Category",
+															align : 'center',
+															name : "category",
+															editable : true,
+															edittype : 'select',
+															search : false,
+															editoptions : {
+																dataUrl : '/products/getCategory',
+																buildSelect : function(
+																		data) {
+																	console
+																			.log(
+																					"data in buidlder ",
+																					data);
+																	console
+																			.log(data.SD);
+																	var s = "<select>";
+																	var js = JSON
+																			.parse(JSON
+																					.stringify(data));
+																	$
+																			.each(
+																					js,
+																					function(
+																							key,
+																							val) {
+																						s += '<option value="' + key + '">'
+																								+ val
+																								+ '</option>';
+																					});
+																	return s
+																			+ "</select>";
+																}
+															}
+														},
+														{
+															label : "Price",
+															align : 'center',
+															name : "price",
+															editable : true,
+															search : false
+														},
+														{
+															label : "MSRP",
+															align : 'center',
+															template : "number",
+															name : "msrp",
+															editable : true,
+															editoptions : {
+																template : 'number',
+															},
+															formatter : 'number',
+															formatoptions : {
+																defaultValue : '0'
+															},
+															search : false
+														},
+														{
+															label : "Availability",
+															align : 'center',
+															name : "availability",
+															editable : true,
+															edittype : 'select',
+															editoptions : {
+																value : function() {
+																	return {
+																		'true' : 'Yes',
+																		'false' : 'No'
+																	};
+																}
+
+															},
+															formatter : function(
+																	cellvalue,
+																	options,
+																	rowObject,
+																	action) {
+																if (cellvalue === 'TRUE'
+																		|| cellvalue === 'true') {
+																	return 'Yes';
+																} else {
+																	return 'No';
+																}
+															},
+															search : false
+														},
+														{
+															label : "Merchant",
+															align : 'center',
+															name : "merchant",
+															editable : true,
+															formatter : 'number',
+															formatoptions : {
+																defaultValue : '-'
+															},
+															search : false,
+															edittype : 'select',
+
+															editoptions : {
+
+																dataUrl : '/products/getMerchants',
+																buildSelect : function(
+																		data) {
+																	console
+																			.log(
+																					"data in buidlder ",
+																					data);
+
+																	var s = "<select>";
+																	var js = JSON
+																			.parse(JSON
+																					.stringify(data));
+																	console
+																			.log(js)
+																	for ( var key in js) {
+																		if (js
+																				.hasOwnProperty(key)) {
+																			s += '<option value="' + key + '">'
+																					+ js[key]
+																					+ '</option>';
+																		}
+
+																	}
+																	return s
+																			+ "</select>";
+																},
+
+																ajaxSelectOptions : {
+																	contentType : 'application/json'
+																}
+															}
+														},
+														{
+															label : "Description",
+															align : 'center',
+															name : "desc",
+															editable : true,
+															hidden : false,
+															search : false
+														}
+
+												],
+												loadonce : true,
+												mtype : "GET",
+												rownumbers : true,
+												rownumWidth : 66,
+												autowidth : true,
+												shrinkToFit : false,
+												forceFit : true,
+												width : 1223,
+												rowNum : 50,
+												pager : '#ptoolbar',
+												cmTemplate : {
+													editable : true
+												}
+
+											});
+
+							$('#grid')
+									.jqGrid(
+											'navGrid',
+											'#ptoolbar',
+											{
+												edit : true,
+												add : true,
+												del : true,
+												view : true,
+												search : true,
+												position : "right",
+												cloneToTop : true
+											},
+
+											{//Edit Options
+												url : '/products/editProduct',
+												dataType : 'json',
+												width : 400,
+												mtype : "POST",
+												closeAfterEdit : true,
+												reloadAfterSubmit : true,
+												serializeEditData : function(
+														postData) {
+													console
+															.log(JSON
+																	.stringify(postData));
+
+													return JSON
+															.stringify(postData);
+												},
+
+												beforeShowForm : function(
+														postData) {
+													var grid = $("#grid");
+													var dlgDiv = $("#editmod"
+															+ grid[0].id);
+													var parentDiv = dlgDiv
+															.parent(); // div#gbox_list
+													var dlgWidth = dlgDiv
+															.width();
+													var parentWidth = parentDiv
+															.width();
+													var dlgHeight = dlgDiv
+															.height();
+													var parentHeight = parentDiv
+															.height();
+													// TODO: change parentWidth and parentHeight in case of the grid
+													//       is larger as the browser window
+													dlgDiv[0].style.top = Math
+															.round((parentHeight - dlgHeight) / 2)
+															+ "px";
+													dlgDiv[0].style.left = Math
+															.round((parentWidth - dlgWidth) / 2)
+															+ "px";
+
+												},
+												afterShowForm : function(
+														formData) {
+
+												},
+												beforeSubmit : function(
+														postData) {
+
+													postData.msrp = parseInt(postData.msrp);
+													postData.price = parseFloat(postData.price);
+
+													var selRowId = $('#grid')
+															.jqGrid(
+																	'getGridParam',
+																	'selrow');
+													var celValue = $('#grid')
+															.jqGrid('getCell',
+																	selRowId,
+																	'productId');
+													postData.productId = celValue;
+
+													return addAndEditValidation(postData);
+
+												},
+												errorTextFormat : function(data) {
+													if (data.status == 403) {
+														//$('.FormError, .ui-state-error').hide();
+														setTimeout(
+																function() {
+																	document.location.href = "/loginPage"
+																}, 1);
+													} else
+														return 'Error: '
+																+ data.responseText;
+												},
+												afterSubmit : function(data) {
+													if (data.status == 200) {
+														$(this)
+																.jqGrid(
+																		"setGridParam",
+																		{
+																			datatype : 'json'
+																		});
+														return [
+																true,
+																data.responseText,
+																1 ];
+													} else {
+
+														return [
+																false,
+																data.responseText,
+																1 ];
+													}
+												}
+											},
+
+											{//Add Options
+												addCaption : "Add New Prodcut",
+												width : 400,
+												html5Check : true,
+												datatype : "json",
+												url : "/products/addProduct",
+												contentType : 'application/json; UTF-8',
+												ajaxEditOptions : {
+													contentType : "application/json"
+												},
+												recreateForm : true,
+												serializeEditData : function(
+														postData) {
+													return JSON
+															.stringify(postData);
+												},
+												reloadAfterSubmit : true,
+												mtype : "POST",
+												closeAfterAdd : true,
+												reloadAfterSubmit : true,
+												beforeShowForm : function(frm) {
+													var grid = $("#grid");
+													var dlgDiv = $("#editmod"
+															+ grid[0].id);
+													var parentDiv = dlgDiv
+															.parent(); // div#gbox_list
+													var dlgWidth = dlgDiv
+															.width();
+													var parentWidth = parentDiv
+															.width();
+													var dlgHeight = dlgDiv
+															.height();
+													var parentHeight = parentDiv
+															.height();
+													// TODO: change parentWidth and parentHeight in case of the grid
+													//       is larger as the browser window
+													dlgDiv[0].style.top = Math
+															.round((parentHeight - dlgHeight) / 2)
+															+ "px";
+													dlgDiv[0].style.left = Math
+															.round((parentWidth - dlgWidth) / 2)
+															+ "px";
+													$('#tr_productId')
+															.find('td:eq(0)')
+															.append(
+																	"<span class='mystar' style='color:red'>*</span>");
+													$('#tr_productName')
+															.find('td:eq(0)')
+															.append(
+																	"<span class='mystar' style='color:red'>*</span>");
+													$('#tr_price')
+															.find('td:eq(0)')
+															.append(
+																	"<span class='mystar' style='color:red'>*</span>");
+													$('#tr_productImageUrl')
+															.find('td:eq(0)')
+															.append(
+																	"<span class='mystar' style='color:red'>*</span>");
+													$('#tr_url')
+															.find('td:eq(0)')
+															.append(
+																	"<span class='mystar' style='color:red'>*</span>");
+													$('#tr_desc')
+															.find('td:eq(0)')
+															.append(
+																	"<span class='mystar' style='color:red'>*</span>");
+
+												},
+												errorTextFormat : function(data) {
+													if (data.status == 403) {
+														//$('.FormError, .ui-state-error').hide();
+														setTimeout(
+																function() {
+																	document.location.href = "/loginPage"
+																}, 1);
+													} else
+														return 'Error: '
+																+ data.responseText;
+												},
+												beforeSubmit : function(
+														postData) {
+
+													return addAndEditValidation(postData);
+
+												},
+												afterSubmit : function(data) {
+
+													if (data.status == 403) {
+														setTimeout(
+																function() {
+																	document.location.href = "/loginPage"
+																}, 1);
+													}
+													console.log(data);
+													if (data.status == 200) {
+
+														$(this)
+																.jqGrid(
+																		"setGridParam",
+																		{
+																			datatype : 'json'
+																		});
+														return [
+																true,
+																data.responseText,
+																1 ];
+													} else {
+														return [
+																false,
+																data.responseText,
+																1 ];
+													}
+												}
+											},
+											{
+												//Delete optinos
+
+												editCaption : "Delete Partner ",
+												url : "/products/deleteProduct",
+												mtype : 'DELETE',
+												width : 450,
+												//     	ajaxDelOptions: { contentType: "application/json" },
+												recreateForm : true,
+												serializeEditData : function(
+														postData) {
+													return JSON
+															.stringify(postData);
+												},
+												delData : {
+													"productId" : function() {
+														var selectid = $(
+																'#grid')
+																.jqGrid(
+																		'getGridParam',
+																		'selrow');
+														var del = $('#grid')
+																.jqGrid(
+																		'getCell',
+																		selectid,
+																		'productId');
+														return del
+													}
+												},
+												errorTextFormat : function(data) {
+													if (data.status == 403) {
+														//$('.FormError, .ui-state-error').hide();
+														setTimeout(
+																function() {
+																	document.location.href = "/loginPage"
+																}, 1);
+													} else
+														return 'Error: '
+																+ data.responseText;
+												},
+												beforeShowForm : function(form) {
+													var grid = $("#grid");
+													var dlgDiv = $("#delmod"
+															+ grid[0].id);
+													var parentDiv = dlgDiv
+															.parent(); // div#gbox_list
+													var dlgWidth = dlgDiv
+															.width();
+													var parentWidth = parentDiv
+															.width();
+													var dlgHeight = dlgDiv
+															.height();
+													var parentHeight = parentDiv
+															.height();
+													// TODO: change parentWidth and parentHeight in case of the grid
+													//       is larger as the browser window
+													dlgDiv[0].style.top = Math
+															.round((parentHeight - dlgHeight) / 2)
+															+ "px";
+													dlgDiv[0].style.left = Math
+															.round((parentWidth - dlgWidth) / 2)
+															+ "px";
+
+												},
+												afterSubmit : function(data) {
+
+													if (data.status == 200) {
+														$(this)
+																.jqGrid(
+																		"setGridParam",
+																		{
+																			datatype : 'json'
+																		});
+														return [
+																true,
+																data.responseText,
+																1 ];
+													} else
+														return [
+																false,
+																data.responseText,
+																1 ];
+
+												}
+											},
+											{
+												//Search Options
+
+												sopt : [ 'eq' ],
+
+												beforeShowSearch : function(
+														form) {
+
+													var grid = $("#grid");
+													var dlgDiv = $("#searchmodfbox_grid");
+													var parentDiv = dlgDiv
+															.parent(); // div#gbox_list
+													var dlgWidth = dlgDiv
+															.width();
+													var parentWidth = parentDiv
+															.width();
+													var dlgHeight = dlgDiv
+															.height();
+													var parentHeight = parentDiv
+															.height();
+													// TODO: change parentWidth and parentHeight in case of the grid
+													//       is larger as the browser window
+													dlgDiv[0].style.top = Math
+															.round((parentHeight - dlgHeight) / 2)
+															+ "px";
+													dlgDiv[0].style.left = Math
+															.round((parentWidth - dlgWidth) / 2)
+															+ "px";
+												},
+												beforeShowForm : function(form) {
+													var grid = $("#grid");
+													var dlgDiv = $("#viewmod"
+															+ grid[0].id);
+													var parentDiv = dlgDiv
+															.parent(); // div#gbox_list
+													var dlgWidth = dlgDiv
+															.width();
+													var parentWidth = parentDiv
+															.width();
+													var dlgHeight = dlgDiv
+															.height();
+													var parentHeight = parentDiv
+															.height();
+													// TODO: change parentWidth and parentHeight in case of the grid
+													//       is larger as the browser window
+													dlgDiv[0].style.top = Math
+															.round((parentHeight - dlgHeight) / 2)
+															+ "px";
+													dlgDiv[0].style.left = Math
+															.round((parentWidth - dlgWidth) / 2)
+															+ "px";
+
+													var selectid = $('#grid')
+															.jqGrid(
+																	'getGridParam',
+																	'selrow');
+													var del = $('#grid')
+															.jqGrid('getCell',
+																	selectid,
+																	'recordStat');
+												}
+
+											});
+
+						});
+
+		$.extend($.jgrid.edit, {
+			ajaxEditOptions : {
+				contentType : "application/json"
+			},
+			recreateForm : true,
+			serializeEditData : function(postData) {
+				return JSON.stringify(postData);
+			}
+
+		});
+
+		/* $.extend($.jgrid.edit, {
+		 ajaxEditOptions: { contentType: "application/json" },
+		 mType: 'POST'
+		
+		 });
+
+		 $.extend($.jgrid.del, {
+		 ajaxDelOptions: { contentType: "application/json" },
+		 mType:'DELETE'
+		
+		 }); */
+
+		function addAndEditValidation(postData) {
+
+			var numbers = /^\d*(\.\d*)?$/;
+			var cardNum = /^[0-9]{1,20}$/g;
+
+			/* 	if( /^\d+$/.test(postData.productId)  )
+			 {
+			 return [false, 'Product ID cant be null and has to be valid number', 1];
+			 }  */
+
+		}
+	</script>
+
+
+
+
+
+
+
+</body>
+</html>
